@@ -1,0 +1,183 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum PerfilUsuario {
+  ADMIN
+  GERENTE
+  ATENDENTE
+  CLIENTE
+  COZINHA
+}
+
+enum CanalPedido {
+  APP
+  TOTEM
+  BALCAO
+  PICKUP
+  WEB
+}
+
+enum StatusPedido {
+  CRIADO
+  AGUARDANDO_PAGAMENTO
+  PAGO
+  PAGAMENTO_NEGADO
+  EM_PREPARO
+  PRONTO
+  ENTREGUE
+  CANCELADO
+}
+
+enum StatusPagamento {
+  PENDENTE
+  APROVADO
+  NEGADO
+}
+
+enum TipoMovimentacaoEstoque {
+  ENTRADA
+  SAIDA
+  RESERVA
+  ESTORNO
+}
+
+model Usuario {
+  id                      String        @id @default(cuid())
+  nome                    String
+  email                   String        @unique
+  telefone                String?
+  senhaHash               String
+  perfil                  PerfilUsuario
+  consentimentoFidelidade Boolean       @default(false)
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime      @updatedAt
+
+  pedidos              Pedido[]
+  fidelidade           Fidelidade?
+  auditorias           Auditoria[]
+  movimentacoesEstoque MovimentacaoEstoque[]
+}
+
+model Unidade {
+  id        String   @id @default(cuid())
+  nome      String
+  codigo    String   @unique
+  endereco  String
+  ativa     Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  estoques Estoque[]
+  pedidos  Pedido[]
+}
+
+model Produto {
+  id            String   @id @default(cuid())
+  nome          String
+  descricao     String?
+  precoCentavos Int
+  ativo         Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  estoques    Estoque[]
+  pedidoItens PedidoItem[]
+}
+
+model Estoque {
+  id         String   @id @default(cuid())
+  unidadeId  String
+  produtoId  String
+  quantidade Int      @default(0)
+  minimo     Int      @default(0)
+  updatedAt  DateTime @updatedAt
+
+  unidade       Unidade               @relation(fields: [unidadeId], references: [id])
+  produto       Produto               @relation(fields: [produtoId], references: [id])
+  movimentacoes MovimentacaoEstoque[]
+
+  @@unique([unidadeId, produtoId])
+}
+
+model MovimentacaoEstoque {
+  id         String                  @id @default(cuid())
+  estoqueId  String
+  usuarioId  String?
+  tipo       TipoMovimentacaoEstoque
+  quantidade Int
+  motivo     String?
+  createdAt  DateTime                @default(now())
+
+  estoque Estoque  @relation(fields: [estoqueId], references: [id])
+  usuario Usuario? @relation(fields: [usuarioId], references: [id])
+}
+
+model Pedido {
+  id            String       @id @default(cuid())
+  codigo        String       @unique
+  clienteId     String
+  unidadeId     String
+  canalPedido   CanalPedido
+  status        StatusPedido @default(CRIADO)
+  totalCentavos Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  cliente   Usuario      @relation(fields: [clienteId], references: [id])
+  unidade   Unidade      @relation(fields: [unidadeId], references: [id])
+  itens     PedidoItem[]
+  pagamento Pagamento?
+}
+
+model PedidoItem {
+  id                    String @id @default(cuid())
+  pedidoId              String
+  produtoId             String
+  quantidade            Int
+  precoUnitarioCentavos Int
+  subtotalCentavos      Int
+
+  pedido  Pedido  @relation(fields: [pedidoId], references: [id])
+  produto Produto @relation(fields: [produtoId], references: [id])
+}
+
+model Pagamento {
+  id              String          @id @default(cuid())
+  pedidoId        String          @unique
+  status          StatusPagamento @default(PENDENTE)
+  metodo          String          @default("MOCK")
+  valorCentavos   Int
+  providerPayload String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  pedido Pedido @relation(fields: [pedidoId], references: [id])
+}
+
+model Fidelidade {
+  id        String   @id @default(cuid())
+  usuarioId String   @unique
+  pontos    Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id])
+}
+
+model Auditoria {
+  id        String   @id @default(cuid())
+  usuarioId String?
+  acao      String
+  recurso   String
+  recursoId String?
+  detalhes  String?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  usuario Usuario? @relation(fields: [usuarioId], references: [id])
+}
