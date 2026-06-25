@@ -7,6 +7,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { PerfilUsuario } from '@prisma/client';
+import { ApiStandardErrors } from '../../common/decorators/api-standard-errors.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -15,6 +16,7 @@ import { UsersService } from './users.service';
 
 @ApiTags('Usuários')
 @ApiBearerAuth()
+@ApiStandardErrors()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('usuarios')
 export class UsersController {

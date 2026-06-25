@@ -8,6 +8,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { PerfilUsuario } from '@prisma/client';
+import { ApiStandardErrors } from '../../common/decorators/api-standard-errors.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -16,6 +17,7 @@ import { UnidadeResponseDto } from './dto/unidade-response.dto';
 import { UnidadesService } from './unidades.service';
 
 @ApiTags('Unidades')
+@ApiStandardErrors()
 @Controller('unidades')
 export class UnidadesController {
   constructor(private readonly unidadesService: UnidadesService) {}

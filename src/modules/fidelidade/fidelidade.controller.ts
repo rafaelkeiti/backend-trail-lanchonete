@@ -7,6 +7,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { PerfilUsuario } from '@prisma/client';
+import { ApiStandardErrors } from '../../common/decorators/api-standard-errors.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -18,6 +19,7 @@ import { FidelidadeService } from './fidelidade.service';
 
 @ApiTags('Fidelidade')
 @ApiBearerAuth()
+@ApiStandardErrors()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(PerfilUsuario.CLIENTE)
 @Controller('fidelidade')

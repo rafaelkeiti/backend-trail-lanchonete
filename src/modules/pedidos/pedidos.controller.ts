@@ -10,6 +10,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { CanalPedido, PerfilUsuario, StatusPedido } from '@prisma/client';
+import { ApiStandardErrors } from '../../common/decorators/api-standard-errors.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -22,6 +23,7 @@ import { PedidosService } from './pedidos.service';
 
 @ApiTags('Pedidos')
 @ApiBearerAuth()
+@ApiStandardErrors()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('pedidos')
 export class PedidosController {

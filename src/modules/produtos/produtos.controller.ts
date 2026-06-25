@@ -9,6 +9,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { PerfilUsuario } from '@prisma/client';
+import { ApiStandardErrors } from '../../common/decorators/api-standard-errors.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -18,6 +19,7 @@ import { UpdateProdutoDto } from './dto/update-produto.dto';
 import { ProdutosService } from './produtos.service';
 
 @ApiTags('Produtos')
+@ApiStandardErrors()
 @Controller('produtos')
 export class ProdutosController {
   constructor(private readonly produtosService: ProdutosService) {}

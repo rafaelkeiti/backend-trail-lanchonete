@@ -8,6 +8,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { PerfilUsuario } from '@prisma/client';
+import { ApiStandardErrors } from '../../common/decorators/api-standard-errors.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -19,6 +20,7 @@ import { PagamentosService } from './pagamentos.service';
 
 @ApiTags('Pagamentos')
 @ApiBearerAuth()
+@ApiStandardErrors()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('pagamentos')
 export class PagamentosController {

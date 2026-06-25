@@ -6,6 +6,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { ApiStandardErrors } from '../../common/decorators/api-standard-errors.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { AuthenticatedUser } from '../../common/types/authenticated-user.type';
@@ -16,6 +17,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 
 @ApiTags('Auth')
+@ApiStandardErrors()
 @Controller('auth')
 export class AuthController {
   constructor(
