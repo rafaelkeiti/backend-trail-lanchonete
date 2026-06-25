@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EstoqueModule } from './modules/estoque/estoque.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { PedidosModule } from './modules/pedidos/pedidos.module';
 import { ProdutosModule } from './modules/produtos/produtos.module';
 import { UnidadesModule } from './modules/unidades/unidades.module';
 import { UsersModule } from './modules/users/users.module';
@@ -20,6 +21,7 @@ import { PrismaModule } from './prisma/prisma.module';
     UnidadesModule,
     ProdutosModule,
     EstoqueModule,
+    PedidosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
