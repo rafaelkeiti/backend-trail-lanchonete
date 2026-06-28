@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuditoriaModule } from './modules/auditoria/auditoria.module';
 import { EstoqueModule } from './modules/estoque/estoque.module';
 import { FidelidadeModule } from './modules/fidelidade/fidelidade.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -26,6 +27,7 @@ import { PrismaModule } from './prisma/prisma.module';
     PedidosModule,
     PagamentosModule,
     FidelidadeModule,
+    AuditoriaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
