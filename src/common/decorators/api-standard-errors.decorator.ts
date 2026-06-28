@@ -13,7 +13,7 @@ export function ApiStandardErrors() {
     ApiBadRequestResponse({ type: ErrorResponseDto, description: 'Erro de validação.' }),
     ApiUnauthorizedResponse({ type: ErrorResponseDto, description: 'Token está ausente ou inválido.' }),
     ApiForbiddenResponse({ type: ErrorResponseDto, description: 'Perfil não tem permissão.' }),
-    ApiNotFoundResponse({ type: ErrorResponseDto, description: 'O recurso não fio encontrado.' }),
+    ApiNotFoundResponse({ type: ErrorResponseDto, description: 'O recurso não foi encontrado.' }),
     ApiConflictResponse({ type: ErrorResponseDto, description: 'Conflito de alguma regra de negócio.' }),
   );
 }

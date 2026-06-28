@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiConflictResponse,
@@ -34,6 +34,7 @@ export class FidelidadeController {
   }
 
   @Post('resgatar')
+  @HttpCode(200)
   @ApiOkResponse({ type: FidelidadeResponseDto })
   @ApiConflictResponse({ description: 'Saldo insuficiente.' })
   @ApiUnauthorizedResponse({ description: 'Token ausente ou inválido.' })
