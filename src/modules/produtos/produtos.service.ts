@@ -1,9 +1,27 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Produto } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateProdutoDto } from './dto/create-produto.dto';
 import { ProdutoResponseDto } from './dto/produto-response.dto';
 import { UpdateProdutoDto } from './dto/update-produto.dto';
+
+const unidadesDisponiveisInclude = {
+  estoques: {
+    where: {
+      quantidade: { gt: 0 },
+      unidade: { ativa: true },
+    },
+    select: {
+      unidade: {
+        select: { id: true, nome: true },
+      },
+    },
+  },
+} satisfies Prisma.ProdutoInclude;
+
+type ProdutoComUnidades = Prisma.ProdutoGetPayload<{
+  include: typeof unidadesDisponiveisInclude;
+}>;
 
 @Injectable()
 export class ProdutosService {
@@ -12,6 +30,7 @@ export class ProdutosService {
   async create(dto: CreateProdutoDto): Promise<ProdutoResponseDto> {
     const produto = await this.prisma.produto.create({
       data: dto,
+      include: unidadesDisponiveisInclude,
     });
 
     return this.toResponse(produto);
@@ -31,6 +50,7 @@ export class ProdutosService {
       this.prisma.produto.findMany({
         skip,
         take: safeLimit,
+        include: unidadesDisponiveisInclude,
         orderBy: { nome: 'asc' },
       }),
       this.prisma.produto.count(),
@@ -47,6 +67,7 @@ export class ProdutosService {
   async findOne(id: string): Promise<ProdutoResponseDto> {
     const produto = await this.prisma.produto.findUnique({
       where: { id },
+      include: unidadesDisponiveisInclude,
     });
 
     if (!produto) {
@@ -62,6 +83,7 @@ export class ProdutosService {
     const produto = await this.prisma.produto.update({
       where: { id },
       data: dto,
+      include: unidadesDisponiveisInclude,
     });
 
     return this.toResponse(produto);
@@ -78,13 +100,14 @@ export class ProdutosService {
     }
   }
 
-  private toResponse(produto: Produto): ProdutoResponseDto {
+  private toResponse(produto: ProdutoComUnidades): ProdutoResponseDto {
     return {
       id: produto.id,
       nome: produto.nome,
       descricao: produto.descricao,
       precoCentavos: produto.precoCentavos,
       ativo: produto.ativo,
+      unidadesDisponiveis: produto.estoques.map((estoque) => estoque.unidade),
       createdAt: produto.createdAt,
     };
   }

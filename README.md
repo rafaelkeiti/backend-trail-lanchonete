@@ -54,7 +54,26 @@ npm --version
 
 Os três comandos devem mostrar suas versões. Novamente, se não der certo, feche e abra seu editor de código e tente os comandos novamente.
 
-No Windows, caso o PowerShell bloqueie a execução de `npm.ps1`, tente o Prompt de Comando, o Git Bash mesmo ou substituir `npm` por `npm.cmd` nos comandos
+### Erro de execução de scripts no PowerShell
+
+Em alguns computadores, o PowerShell  vai informar que a execução de scripts é desabilitada quando tentar usar o `npm`. Isso acontece porque o PowerShell tenta executar o arquivo `npm.ps1` e não significa que o npm foi instalado de maneira errada
+
+A solução mais simples, que não altera nenhuma configuração de segurança do Windows, é substituir `npm` por `npm.cmd`:
+
+```powershell
+npm.cmd --version
+npm.cmd install
+npm.cmd run db:setup
+npm.cmd run start:dev
+```
+
+Também é possível abrir o Prompt de Comando ou o Git Bash e utilizar normalmente os comandos com `npm`.
+
+Caso o usuário queira permitir scripts locais no PowerShell, pode alterar a política só para seu usuário:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
 
 ## Instalação do projeto
 
@@ -66,7 +85,7 @@ npm install
 
 ## Variáveis de ambiente
 
-É necessário criar um arquivo `.env` na raiz do projeto usando o `.env.example` como base. Esse arquivo é necessário para executar os comandos do Prisma e iniciar a aplicação:
+É necessário criar um arquivo `.env` na raiz do projeto usando o `.env.example` como base. Você pode criar ele manualmente ou por comando. Esse arquivo vai ser necessário para executar os comandos do Prisma e iniciar a aplicação:
 
 No PowerShell:
 
