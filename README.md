@@ -16,14 +16,36 @@ O trabalho é uma API para uma rede de lanchonetes, desenvolvida como MVP da tri
 
 ## Requisitos do projeto
 
+- Git
 - Node.js 22 ou superior
-- npm
+- npm, instalado junto com o Node.js
 - TypeScript 5
 - NestJS 10
 - Prisma 6
 - SQLite
 
-## Instalação
+TypeScript, NestJS e Prisma são dependências do projeto e já vão instaladas pelo `npm install`. O SQLite utilizado pela aplicação é um arquivo local, por isso não vai exigir a instalação de um servidor de banco de dados.
+
+## Preparação do ambiente
+
+Na execução do projeto num computador que ainda não tem as ferramentas necessárias:
+
+1. Instalar o [Git](https://git-scm.com/downloads).
+2. Instalar uma versão LTS do [Node.js](https://nodejs.org/en/download) igual ou maior que 22. O instalador do Node.js também instala o npm, então não precisa se preocupar.
+3. Fechar e abrir o terminal para que possa atualizar as variáveis de ambiente.
+4. Verificar as instalações:
+
+```bash
+git --version
+node --version
+npm --version
+```
+
+Os três comandos devem mostrar suas versões.
+
+No Windows, caso o PowerShell bloqueie a execução de `npm.ps1`, tente o Prompt de Comando, o Git Bash mesmo ou substituir `npm` por `npm.cmd` nos comandos
+
+## Instalação do projeto
 
 ```bash
 git clone https://github.com/rafaelkeiti/backend-trail-lanchonete.git
@@ -34,6 +56,26 @@ npm install
 ## Variáveis de ambiente
 
 É necessário criar um arquivo `.env` na raiz do projeto usando o `.env.example` como base. Esse arquivo é necessário para executar os comandos do Prisma e iniciar a aplicação:
+
+No PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+No Prompt de Comando do Windows:
+
+```bat
+copy .env.example .env
+```
+
+No Linux, macOS ou no Git Bash:
+
+```bash
+cp .env.example .env
+```
+
+O arquivo criado vai ter essas configurações:
 
 ```env
 PORT=3000
