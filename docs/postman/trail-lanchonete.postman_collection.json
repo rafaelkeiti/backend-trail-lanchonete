@@ -18,6 +18,14 @@
       "value": ""
     },
     {
+      "key": "gerenteToken",
+      "value": ""
+    },
+    {
+      "key": "cozinhaToken",
+      "value": ""
+    },
+    {
       "key": "unidadeId",
       "value": ""
     },
@@ -43,7 +51,7 @@
       "name": "Auth",
       "item": [
         {
-          "name": "T01 - Login cliente válido",
+          "name": "T01 - Cliente realiza login válido",
           "event": [
             {
               "listen": "test",
@@ -74,7 +82,7 @@
           }
         },
         {
-          "name": "T02 - Login admin válido",
+          "name": "T02 - Administrador realiza login válido",
           "event": [
             {
               "listen": "test",
@@ -104,7 +112,7 @@
           }
         },
         {
-          "name": "T03 - Login inválido",
+          "name": "T03 - Usuário tenta login com senha inválida",
           "event": [
             {
               "listen": "test",
@@ -133,7 +141,7 @@
           }
         },
         {
-          "name": "T04 - Acesso sem token",
+          "name": "T04 - Usuário acessa perfil sem token",
           "event": [
             {
               "listen": "test",
@@ -156,7 +164,7 @@
       "name": "Catálogo",
       "item": [
         {
-          "name": "T05 - Listar unidades",
+          "name": "T05 - Consulta pública de unidades",
           "event": [
             {
               "listen": "test",
@@ -176,7 +184,7 @@
           }
         },
         {
-          "name": "T06 - Listar produtos",
+          "name": "T06 - Consulta pública de produtos",
           "event": [
             {
               "listen": "test",
@@ -201,7 +209,7 @@
       "name": "Pedidos e Pagamento",
       "item": [
         {
-          "name": "T07 - Criar pedido válido com canalPedido",
+          "name": "T07 - Cliente cria pedido válido",
           "event": [
             {
               "listen": "test",
@@ -237,7 +245,7 @@
           }
         },
         {
-          "name": "T08 - Filtrar pedidos por canal",
+          "name": "T08 - Administrador filtra pedidos por canal",
           "event": [
             {
               "listen": "test",
@@ -245,7 +253,11 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('status 200', function () { pm.response.to.have.status(200); });",
-                  "pm.test('retorna lista', function () { pm.expect(pm.response.json()).to.be.an('array'); });"
+                  "const pedidos = pm.response.json();",
+                  "pm.test('retorna pedidos do canal APP', function () {",
+                  "  pm.expect(pedidos).to.be.an('array').that.is.not.empty;",
+                  "  pm.expect(pedidos.every(function (pedido) { return pedido.canalPedido === 'APP'; })).to.eql(true);",
+                  "});"
                 ]
               }
             }
@@ -262,7 +274,32 @@
           }
         },
         {
-          "name": "T09 - Pagamento mock aprovado",
+          "name": "T09 - Cliente tenta filtrar pedidos por canal",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 403', function () { pm.response.to.have.status(403); });",
+                  "pm.test('erro de permissão', function () { pm.expect(pm.response.json().error).to.eql('SEM_PERMISSAO'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clienteToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/pedidos?canalPedido=APP"
+          }
+        },
+        {
+          "name": "T10 - Cliente realiza pagamento mock aprovado",
           "event": [
             {
               "listen": "test",
@@ -298,7 +335,7 @@
           }
         },
         {
-          "name": "T10 - Criar pedido para pagamento negado",
+          "name": "T11 - Cliente cria pedido para pagamento negado",
           "event": [
             {
               "listen": "test",
@@ -331,7 +368,7 @@
           }
         },
         {
-          "name": "T11 - Pagamento mock negado",
+          "name": "T12 - Cliente realiza pagamento mock negado",
           "event": [
             {
               "listen": "test",
@@ -371,7 +408,7 @@
       "name": "Fidelidade, Auditoria e Erros",
       "item": [
         {
-          "name": "T12 - Consultar saldo de fidelidade",
+          "name": "T13 - Cliente consulta saldo de fidelidade",
           "event": [
             {
               "listen": "test",
@@ -396,7 +433,7 @@
           }
         },
         {
-          "name": "T13 - Consultar auditoria",
+          "name": "T14 - Administrador consulta auditoria",
           "event": [
             {
               "listen": "test",
@@ -404,7 +441,14 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('status 200', function () { pm.response.to.have.status(200); });",
-                  "pm.test('retorna registros', function () { pm.expect(pm.response.json()).to.be.an('array'); });"
+                "const registros = pm.response.json();",
+                "pm.test('retorna registros', function () { pm.expect(registros).to.be.an('array').that.is.not.empty; });",
+                "pm.test('ação sensível foi auditada', function () {",
+                "  const possuiAcaoSensivel = registros.some(function (registro) {",
+                "    return registro.acao === 'PEDIDO_CRIADO' || registro.acao === 'PAGAMENTO_MOCK_PROCESSADO';",
+                "  });",
+                "  pm.expect(possuiAcaoSensivel).to.eql(true);",
+                "});"
                 ]
               }
             }
@@ -421,7 +465,32 @@
           }
         },
         {
-          "name": "T14 - Criar pedido sem canalPedido",
+          "name": "T15 - Cliente tenta consultar auditoria",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 403', function () { pm.response.to.have.status(403); });",
+                  "pm.test('erro de permissão', function () { pm.expect(pm.response.json().error).to.eql('SEM_PERMISSAO'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clienteToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/auditoria?limit=20"
+          }
+        },
+        {
+          "name": "T16 - Cliente tenta criar pedido sem canal",
           "event": [
             {
               "listen": "test",
@@ -454,7 +523,7 @@
           }
         },
         {
-          "name": "T15 - Pedido com estoque insuficiente",
+          "name": "T17 - Cliente tenta criar pedido sem estoque",
           "event": [
             {
               "listen": "test",
@@ -487,14 +556,15 @@
           }
         },
         {
-          "name": "T16 - Cliente sem permissão para criar produto",
+          "name": "T18 - Cliente tenta criar produto sem permissão",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('status 403', function () { pm.response.to.have.status(403); });"
+                  "pm.test('status 403', function () { pm.response.to.have.status(403); });",
+                  "pm.test('erro de permissão', function () { pm.expect(pm.response.json().error).to.eql('SEM_PERMISSAO'); });"
                 ]
               }
             }
@@ -519,7 +589,7 @@
           }
         },
         {
-          "name": "T17 - Pedido com quantidade inválida",
+          "name": "T19 - Cliente tenta criar pedido com quantidade inválida",
           "event": [
             {
               "listen": "test",
@@ -552,7 +622,7 @@
           }
         },
         {
-          "name": "T18 - Pedido com produto inexistente",
+          "name": "T20 - Cliente tenta criar pedido com produto inexistente",
           "event": [
             {
               "listen": "test",
@@ -582,6 +652,314 @@
               "raw": "{\n  \"canalPedido\": \"WEB\",\n  \"unidadeId\": \"{{unidadeId}}\",\n  \"itens\": [\n    {\n      \"produtoId\": \"produto-inexistente\",\n      \"quantidade\": 1\n    }\n  ]\n}"
             },
             "url": "{{baseUrl}}/pedidos"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Perfis e Permissões",
+      "item": [
+        {
+          "name": "T21 - Gerente realiza login válido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('gerenteToken', json.accessToken);",
+                  "pm.test('retorna accessToken', function () { pm.expect(json.accessToken).to.be.a('string'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"gerente@lanchonete.com\",\n  \"senha\": \"Senha@123\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "T22 - Gerente consulta estoque da unidade",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', function () { pm.response.to.have.status(200); });",
+                  "const estoques = pm.response.json();",
+                  "pm.test('retorna estoque da unidade', function () {",
+                  "  pm.expect(estoques).to.be.an('array').that.is.not.empty;",
+                  "  pm.expect(estoques.every(function (estoque) { return estoque.unidadeId === pm.collectionVariables.get('unidadeId'); })).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{gerenteToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/estoque?unidadeId={{unidadeId}}"
+          }
+        },
+        {
+          "name": "T23 - Cliente tenta consultar estoque da unidade",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 403', function () { pm.response.to.have.status(403); });",
+                  "pm.test('erro de permissão', function () { pm.expect(pm.response.json().error).to.eql('SEM_PERMISSAO'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clienteToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/estoque?unidadeId={{unidadeId}}"
+          }
+        },
+        {
+          "name": "T24 - Administrador lista usuários",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', function () { pm.response.to.have.status(200); });",
+                  "const usuarios = pm.response.json();",
+                  "pm.test('retorna usuários sem senhaHash', function () {",
+                  "  pm.expect(usuarios).to.be.an('array').that.is.not.empty;",
+                  "  pm.expect(usuarios.every(function (usuario) { return !Object.prototype.hasOwnProperty.call(usuario, 'senhaHash'); })).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/usuarios"
+          }
+        },
+        {
+          "name": "T25 - Cliente tenta listar usuários",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 403', function () { pm.response.to.have.status(403); });",
+                  "pm.test('erro de permissão', function () { pm.expect(pm.response.json().error).to.eql('SEM_PERMISSAO'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clienteToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/usuarios"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cozinha",
+      "item": [
+        {
+          "name": "T26 - Cozinha realiza login válido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('cozinhaToken', json.accessToken);",
+                  "pm.test('retorna accessToken', function () { pm.expect(json.accessToken).to.be.a('string'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"cozinha@lanchonete.com\",\n  \"senha\": \"Senha@123\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "T27 - Cozinha lista pedidos pagos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', function () { pm.response.to.have.status(200); });",
+                  "const pedidos = pm.response.json();",
+                  "pm.test('pedido aprovado está disponível para a cozinha', function () {",
+                  "  pm.expect(pedidos).to.be.an('array').that.is.not.empty;",
+                  "  pm.expect(pedidos.some(function (pedido) { return pedido.id === pm.collectionVariables.get('pedidoId'); })).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{cozinhaToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/pedidos?status=PAGO"
+          }
+        },
+        {
+          "name": "T28 - Cozinha inicia preparo do pedido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('pedido em preparo', function () { pm.expect(pm.response.json().status).to.eql('EM_PREPARO'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{cozinhaToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"EM_PREPARO\"\n}"
+            },
+            "url": "{{baseUrl}}/pedidos/{{pedidoId}}/status"
+          }
+        },
+        {
+          "name": "T29 - Cozinha marca pedido como pronto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('pedido pronto', function () { pm.expect(pm.response.json().status).to.eql('PRONTO'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{cozinhaToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"PRONTO\"\n}"
+            },
+            "url": "{{baseUrl}}/pedidos/{{pedidoId}}/status"
+          }
+        },
+        {
+          "name": "T30 - Cozinha marca pedido como entregue",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('pedido entregue', function () { pm.expect(pm.response.json().status).to.eql('ENTREGUE'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{cozinhaToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ENTREGUE\"\n}"
+            },
+            "url": "{{baseUrl}}/pedidos/{{pedidoId}}/status"
           }
         }
       ]

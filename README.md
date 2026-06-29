@@ -142,6 +142,7 @@ Usuários criados pela seed:
 | --- | --- | --- |
 | Admin | `admin@lanchonete.com` | `Senha@123` |
 | Gerente | `gerente@lanchonete.com` | `Senha@123` |
+| Cozinha | `cozinha@lanchonete.com` | `Senha@123` |
 | Cliente | `cliente@exemplo.com` | `Senha@123` |
 
 ## Executar a API
@@ -321,11 +322,11 @@ Como executar:
 3. Importar a coleção no Postman.
 4. Executar as requisições na ordem da coleção.
 
-A coleção já possui a variável `baseUrl` configurada como `http://localhost:3000/api`. As requisições T01 e T02 realizam os logins e armazenam automaticamente os tokens do cliente e do administrador. Por isso, a coleção deve ser executada na ordem apresentada, preferencialmente pelo Collection Runner.
+A coleção já possui a variável `baseUrl` configurada como `http://localhost:3000/api`. As requisições T01, T02, T21 e T26 realizam os logins e armazenam automaticamente os tokens do cliente, do administrador, do gerente e da cozinha. Por isso, a coleção precisa executada na ordem apresentada, preferencialmente pelo Collection Runner, que vai rodar todos os testes de uma vez e apresentar todas as respostas.
 
 Antes de repetir a coleção completa, execute `npm run prisma:seed` para restaurar os dados e o estoque inicial. Esse comando apaga os dados locais anteriores.
 
-A coleção possui 18 requisições organizadas em ordem de execução. Ela cobre login, acesso sem token, perfil sem permissão, unidades, produtos, pedidos, pagamento mock aprovado e negado, fidelidade, auditoria, quantidade inválida, produto inexistente e erros de validação e regra de negócio.
+A coleção possui 30 requisições organizadas em ordem e vai cobrir login, acesso sem token, permissões de cliente, administrador, gerente e cozinha, unidades, produtos, estoque, usuários, pedidos, pagamento mock aprovado e negado, fidelidade, auditoria, fluxo de preparo, quantidade inválida, produto inexistente e erros de validação e regra de negócio.
 
 ## Validação local
 
@@ -344,7 +345,7 @@ Também foi validado manualmente:
 - criação de pedido com `canalPedido`;
 - pagamento mock aprovado e negado;
 - consulta de auditoria;
-- os 18 cenários da coleção Postman.
+- os 30 cenários da coleção Postman.
 
 ## Links da entrega
 

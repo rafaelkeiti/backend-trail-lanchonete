@@ -42,6 +42,15 @@ async function main() {
     },
   });
 
+  await prisma.usuario.create({
+    data: {
+      nome: 'Equipe da Cozinha',
+      email: 'cozinha@lanchonete.com',
+      senhaHash,
+      perfil: PerfilUsuario.COZINHA,
+    },
+  });
+
   const cliente = await prisma.usuario.create({
     data: {
       nome: 'Cliente Teste',

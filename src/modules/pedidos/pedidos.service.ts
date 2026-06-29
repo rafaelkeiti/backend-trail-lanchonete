@@ -198,9 +198,7 @@ export class PedidosService {
       throw new NotFoundException('Pedido não encontrado.');
     }
 
-    if (pedidoAtual.status === StatusPedido.CANCELADO || pedidoAtual.status === StatusPedido.ENTREGUE) {
-      throw new ConflictException('Pedido finalizado não pode mudar de status.');
-    }
+    this.validarTransicaoStatus(pedidoAtual.status, dto.status);
 
     const pedido = await this.prisma.$transaction(async (tx) => {
       const atualizado = await tx.pedido.update({
@@ -226,6 +224,20 @@ export class PedidosService {
     });
 
     return this.toResponse(pedido);
+  }
+
+  private validarTransicaoStatus(statusAtual: StatusPedido, novoStatus: StatusPedido): void {
+    const transicoesPermitidas: Partial<Record<StatusPedido, StatusPedido[]>> = {
+      [StatusPedido.PAGO]: [StatusPedido.EM_PREPARO],
+      [StatusPedido.EM_PREPARO]: [StatusPedido.PRONTO],
+      [StatusPedido.PRONTO]: [StatusPedido.ENTREGUE],
+    };
+
+    if (!transicoesPermitidas[statusAtual]?.includes(novoStatus)) {
+      throw new ConflictException(
+        `Transição de status inválida: ${statusAtual} para ${novoStatus}.`,
+      );
+    }
   }
 
   async cancel(id: string, usuario: AuthenticatedUser): Promise<void> {
