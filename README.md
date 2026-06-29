@@ -37,7 +37,7 @@ winget install --id Git.Git -e
 winget install --id OpenJS.NodeJS.LTS -e
 ```
 
-O segundo comando instala o Node.js LTS e o npm. Não é necessário usar Docker ou Chocolatey que a página de download do node oferece de opção. Depois de finalizar, é bom fechar e abrir o terminal.
+O segundo comando instala o Node.js LTS e o npm. Não é necessário usar Docker ou Chocolatey que a página de download do node oferece de opção. Depois de finalizar, feche e abra seu terminal ou editor de código.
 
 Também podemos usar os instaladores dos sites oficiais:
 
@@ -52,7 +52,7 @@ node --version
 npm --version
 ```
 
-Os três comandos devem mostrar suas versões.
+Os três comandos devem mostrar suas versões. Novamente, se não der certo, feche e abra seu editor de código e tente os comandos novamente.
 
 No Windows, caso o PowerShell bloqueie a execução de `npm.ps1`, tente o Prompt de Comando, o Git Bash mesmo ou substituir `npm` por `npm.cmd` nos comandos
 
