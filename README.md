@@ -30,6 +30,17 @@ TypeScript, NestJS e Prisma são dependências do projeto e já vão instaladas 
 
 Na execução do projeto num computador que ainda não tem as ferramentas necessárias:
 
+No Windows 10 ou 11, o Git, o Node.js LTS e o npm podem ser instalados diretamente pelo PowerShell ou Prompt de Comando:
+
+```powershell
+winget install --id Git.Git -e
+winget install --id OpenJS.NodeJS.LTS -e
+```
+
+O segundo comando instala o Node.js LTS e o npm. Não é necessário usar Docker ou Chocolatey que a página de download do node oferece de opção. Depois de finalizar, é bom fechar e abrir o terminal.
+
+Também podemos usar os instaladores dos sites oficiais:
+
 1. Instalar o [Git](https://git-scm.com/downloads).
 2. Instalar uma versão LTS do [Node.js](https://nodejs.org/en/download) igual ou maior que 22. O instalador do Node.js também instala o npm, então não precisa se preocupar.
 3. Fechar e abrir o terminal para que possa atualizar as variáveis de ambiente.
